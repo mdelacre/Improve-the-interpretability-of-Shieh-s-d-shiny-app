@@ -34,11 +34,11 @@ server <- function(input,output){
   output$plot <- renderPlot(
     {
       
-      sto <- data.frame(n1=rep(0,N-1),
-                        n2=rep(0,N-1),
-                        nratio=rep(0,N-1),
-                        shieh=rep(0,N-1),
-                        cohen=rep(0,N-1))
+      sto <- data.frame(n1=rep(0,input$N-1),
+                        n2=rep(0,input$N-1),
+                        nratio=rep(0,input$N-1),
+                        shieh=rep(0,input$N-1),
+                        cohen=rep(0,input$N-1))
       
       for (i in seq_len(input$N-1)){
         n1 <- i

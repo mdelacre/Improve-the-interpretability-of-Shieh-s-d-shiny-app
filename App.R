@@ -89,14 +89,13 @@ server <- function(input,output){
              horiz=F,cex=1.5)
     }
       
-      output$eq <- 
-        if (input$plot=="nratio"){
-          intro="Note: in the specific situation where nratio=1,"
-        } else {intro="Note: in the specific situation where log(nratio)=0,"}
+      if (input$plot=="nratio"){
+        intro="Note: in the specific situation where nratio=1,"
+      } else {intro="Note: in the specific situation where log(nratio)=0,"}
       
-          renderText({paste0(intro,"\\(\\delta_{Shieh}\\) = \\(\\frac{\\delta_{Cohen}}{2}\\)"})
-
+      output$eq <-renderText({paste0(intro,"\\(\\delta_{Shieh}\\) = \\(\\frac{\\delta_{Cohen}}{2}\\)")})
       
+        
     }
 
   )
@@ -104,3 +103,4 @@ server <- function(input,output){
   
 }
 shinyApp(ui=ui,server=server)
+

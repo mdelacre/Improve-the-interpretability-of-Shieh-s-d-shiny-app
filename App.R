@@ -4,16 +4,16 @@ library(shiny)
  
 ui <-fluidPage(
   withMathJax(),
-  titlePanel("How to transform Shieh's \\(\\delta\\) value in order to facilitate interpretability?"),br(),
+  titlePanel("\\(\\delta_{Shieh}\\) vs. \\(\\delta_{Cohen}\\)"),br(),
   h4(
-    "The main criticism of Shieh's \\(\\delta\\) is its dependency to the sample size ratio (nratio).",br(),br(),"In order to facilitate interpretability, we could answer the following question: 'What value of Shieh's \\(\\delta\\) would we obtain if design were balanced (i.e. \\(n_{1}\\)=\\(n_{2}\\))?'"
+    "For given total sample size (N), raw mean difference (\\(\\mu_{1}\\)-\\(\\mu_{2}\\)), and sample standard deviations (\\(\\sigma_{1}\\) and \\(\\sigma_{2}\\)), what are the values of \\(\\delta_{Shieh}\\) and \\(\\delta_{Cohen}\\), as a function of the sample sizes ratio (nratio = \\(\\frac{n_1}{n_2}\\))?"
   ),br(),
-  selectInput("plot", "plot:", 
+  selectInput("plot", "x-axis:", 
               c("nratio" = "nratio",
                 "log(nratio)" = "lognratio")),
   sidebarLayout(
     sidebarPanel(
-      p("Set the following population parameters, so as to determine the values of the Shieh's delta as a function of the nratio"),
+      p("Set the following population parameters, so as to determine the values of the \\(\\delta_{Shieh}\\) and \\(\\delta_{Cohen}\\) as a function of the nratio"),
       sliderInput("N", "Total number of observations (N):", min = 10, max = 1000, value = 100,step=2),
       sliderInput("mudiff", "Raw mean difference (\\(\\mu_{1}\\)-\\(\\mu_{2}\\)):", min = -50, max = 50, value = 5),
       sliderInput("sd1", "Standard deviation of the first group (\\(\\sigma_{1}\\)):", min = 1, max = 100, value = 10,step=1),
@@ -65,10 +65,10 @@ server <- function(input,output){
            labels=  as.character(round(sto$cohen[sto$nratio==1],4)),
            col="black",lwd = 1,pos = 4,cex = 1)
       legend("topright", 
-             legend=c(expression(paste("Cohen's ",delta)),expression(paste("Shieh's ",delta))),
+             legend=c(expression(delta["Cohen"]),expression(delta["Shieh"])),
              fill=c("green","lightblue"),
-             horiz=F)
-      
+             horiz=F,cex=1.5)
+
     } else {
       par(xpd=FALSE)
       plot(log(sto$nratio),sto$shieh,ylim=c(min(sto$shieh,sto$cohen),max(sto$shieh,sto$cohen)),pch=19,cex=.3,xlab="log(nratio)",ylab=expression(paste("effect size ",delta)),col="lightblue")
@@ -84,23 +84,21 @@ server <- function(input,output){
            labels=  as.character(round(sto$cohen[sto$nratio==1],4)),
            col="black",lwd = 1,pos = 4,cex = 1)
       legend("topright", 
-             legend=c(expression(paste("Cohen's ",delta)),expression(paste("Shieh's ",delta))),
+             legend=c(expression(delta["Cohen"]),expression(delta["Shieh"])),
              fill=c("green","lightblue"),
-             horiz=F)
+             horiz=F,cex=1.5)
     }
       
-      output$eq <- renderText({
-        
-        withMathJax()
-        paste0(round(sto$shieh[sto$nratio==1],4),
-               " = \\(\\delta_{Shieh}\\) \\(\\times\\) \\(\\frac{(nratio+1) \\times\\ \\sigma_{n_1 \\neq\\ n_2}\\ } {2 \\times\\ ",
-               round(sqrt((input$sd1^2+input$sd2^2)/2),4),
-               " \\times\\ \\sqrt{nratio}}\\), with \\(\\sigma_{n_1 \\neq\\ n_2}\\) =","\\(\\sqrt{(1- \\frac{n_1}{",input$N,"}\\ ) \\times\\ ",round(input$sd1^2,4)," + (1- \\frac{n_2}{",input$N,"}\\ ) \\times\\ ",round(input$sd2^2,4),"}\\)")
-        
-      })
+      output$eq <- 
+        if (input$plot=="nratio"){
+          intro="Note: in the specific situation where nratio=1,"
+        } else {intro="Note: in the specific situation where log(nratio)=0,"}
+      
+          renderText({paste0(intro,"\\(\\delta_{Shieh}\\) = \\(\\frac{\\delta_{Cohen}}{2}\\)"})
+
+      
     }
-    
-    
+
   )
 
   

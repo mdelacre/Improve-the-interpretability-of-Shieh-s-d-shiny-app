@@ -25,8 +25,8 @@ ui <-fluidPage(
     ),
     br(),
     br(),
-    textOutput("eq")   # Place for the equation 
-    
+    textOutput("eq"),   # Place for the equation 
+    textOutput("note")   # Place for a note 
 )
 
 server <- function(input,output){
@@ -38,7 +38,9 @@ server <- function(input,output){
                               n2=rep(0,input$N-1),
                               nratio=rep(0,input$N-1),
                               shieh=rep(0,input$N-1),
-                              cohen=rep(0,input$N-1))
+                              cohen=rep(0,input$N-1),
+                              cohenprime=rep(0,input$N-1)
+                              )
             
             for (i in seq_len(input$N-1)){
                 n1 <- i
@@ -47,13 +49,16 @@ server <- function(input,output){
                 q2<-n2/input$N
                 shieh_d<-input$mudiff/sqrt(input$sd1^2/q1+input$sd2^2/q2)
                 pooled_sd<-sqrt(((n1-1)*input$sd1^2+(n2-1)*input$sd2^2)/(n1+n2-2))
+                unpooled_sd <- sqrt((input$sd1^2+input$sd2^2)/2)
                 cohen_d<-input$mudiff/pooled_sd
-                sto[i,] <- cbind(n1,n2,n1/n2,shieh_d,cohen_d)  
+                cohen_dprime <- input$mudiff/unpooled_sd
+                sto[i,] <- cbind(n1,n2,n1/n2,shieh_d,cohen_d,cohen_dprime)  
             }
             
             if(input$plot=="nratio"){
                 plot(sto$nratio,sto$shieh,pch=19,ylim=c(min(sto$shieh,sto$cohen),max(sto$shieh,sto$cohen)),cex=.2,xlab="nratio",ylab=expression(paste("effect size ",delta)),col="lightblue")
                 points(sto$nratio,sto$cohen,pch=19,cex=.2,col="green")
+                points(sto$nratio,sto$cohenprime,pch=19,cex=.2,col="red")
                 abline(v=1,lty=2,col="lightgrey")
                 points(1,sto$shieh[sto$nratio==1],pch=19,cex=.5,col="black")
                 par(xpd=TRUE)
@@ -65,14 +70,15 @@ server <- function(input,output){
                      labels=  as.character(round(sto$cohen[sto$nratio==1],4)),
                      col="black",lwd = 1,pos = 4,cex = 1)
                 legend("topright", 
-                       legend=c(expression(delta["Cohen"]),expression(delta["Shieh"])),
-                       fill=c("green","lightblue"),
+                       legend=c(expression(delta["Cohen"]),expression(paste(delta,"'"["Cohen"])),expression(delta["Shieh"])),
+                       fill=c("green","red","lightblue"),
                        horiz=F,cex=1.5)
                 
             } else {
                 par(xpd=FALSE)
                 plot(log(sto$nratio),sto$shieh,ylim=c(min(sto$shieh,sto$cohen),max(sto$shieh,sto$cohen)),pch=19,cex=.3,xlab="log(nratio)",ylab=expression(paste("effect size ",delta)),col="lightblue")
                 points(log(sto$nratio),sto$cohen,pch=19,cex=.3,col="green")
+                points(log(sto$nratio),sto$cohenprime,pch=19,cex=.2,col="red")
                 abline(v=0,lty=2,col="lightgrey")  
                 par(xpd=TRUE)
                 points(0,sto$shieh[log(sto$nratio)==0],pch=19,cex=.5,col="black")
@@ -84,8 +90,8 @@ server <- function(input,output){
                      labels=  as.character(round(sto$cohen[sto$nratio==1],4)),
                      col="black",lwd = 1,pos = 4,cex = 1)
                 legend("topright", 
-                       legend=c(expression(delta["Cohen"]),expression(delta["Shieh"])),
-                       fill=c("green","lightblue"),
+                       legend=c(expression(delta["Cohen"]),expression(paste(delta,"'"["Cohen"])),expression(delta["Shieh"])),
+                       fill=c("green","red","lightblue"),
                        horiz=F,cex=1.5)
             }
             
@@ -93,7 +99,11 @@ server <- function(input,output){
                 intro="Note: in the specific situation where nratio=1,"
             } else {intro="Note: in the specific situation where log(nratio)=0,"}
             
-            output$eq <-renderText({paste0(intro,"\\(\\delta_{Shieh}\\) = \\(\\frac{\\delta_{Cohen}}{2}\\)")})
+            output$eq <-renderText({paste0(intro,"\\(\\delta_{Shieh}\\) = \\(\\frac{\\delta_{Cohen}}{2}\\).")})
+            
+            if (input$sd1==input$sd2){
+                output$note <-renderText({paste("Note 2: when both samples are extracted from the same population variances, Cohen estimates with either pooled or unpooled error term are identical.")})
+            } else {output$note <-renderText({""})}
             
             
         }

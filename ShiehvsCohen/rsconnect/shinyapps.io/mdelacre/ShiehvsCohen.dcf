@@ -1,12 +1,10 @@
-name: ShiehvsCohen
-title: ShiehvsCohen
+name: shiehvscohen
+title:
 username:
 account: mdelacre
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
-appId: 2917322
-bundleId: 3687357
-url: https://mdelacre.shinyapps.io/ShiehvsCohen/
-when: 1601472098.99527
-asMultiple: FALSE
-asStatic: FALSE
+appId: 3844183
+bundleId: 4388900
+url: https://mdelacre.shinyapps.io/shiehvscohen/
+when: 1616584386.76196

@@ -1,4 +1,5 @@
 #install.packages("shiny")
+
 library(devtools)
 library(shiny)
 library(gplots)
@@ -40,7 +41,7 @@ server <- function(input,output){
                               shieh=rep(0,input$N-1),
                               cohen=rep(0,input$N-1),
                               cohenprime=rep(0,input$N-1)
-                              )
+            )
             
             for (i in seq_len(input$N-1)){
                 n1 <- i
@@ -110,7 +111,7 @@ server <- function(input,output){
                        horiz=F,cex=1.5)
             }
             
-
+            
         }
         
     )

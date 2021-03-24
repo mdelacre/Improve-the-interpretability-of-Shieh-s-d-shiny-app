@@ -5,6 +5,8 @@ account: mdelacre
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 3844183
-bundleId: 4388900
+bundleId: 4389044
 url: https://mdelacre.shinyapps.io/shiehvscohen/
-when: 1616584386.76196
+when: 1616586499.12432
+asMultiple: FALSE
+asStatic: FALSE

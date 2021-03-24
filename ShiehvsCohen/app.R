@@ -59,11 +59,11 @@ server <- function(input,output){
             if(input$plot=="nratio"){
                 
                 if (input$sd1==input$sd2){
-                    tex <- "When both samples are extracted from the same population variance, Cohen's estimates with either\npooled (green) or unpooled (red) error term are identical. They have a constant value across sample\nsizes ratios, unlike Shieh's estimate.\n\nNote: In the specific situation where nratio=1,the value of Shieh's estimate is exactly half of the\nvalue of Cohen's estimates."
-                } else {tex <- "When both samples are extracted from populations with unequal variances, both Shieh's estimate (blue)\nand Cohen's estimate with pooled error term (green) have unequal values across sample sizes ratios.\nOnly Cohen's estimate with unpooled error term (red) is constant across sample sizes ratios.\n\nNote: In the specific situation where nratio=1,the value of Shieh's estimate is exactly half of the\nvalue of Cohen's estimates."}
+                    tex <- "When both samples are extracted from the same population variance, \nCohen's estimates with either pooled (green) or unpooled (red) error term\nare identical. They have a constant value across sample sizes ratios,\nunlike Shieh's estimate.\n\nNote: In the specific situation where nratio=1,the value of Shieh's\nestimate is exactly half of the value of Cohen's estimates."
+                } else {tex <- "When both samples are extracted from populations with unequal variances, \nboth Shieh's estimate (blue) and Cohen's estimate with pooled error\nterm (green) have unequal values across sample sizes ratios. Only Cohen's\nestimate with unpooled error term (red) is constant across sample sizes ratios.\n\nNote: In the specific situation where nratio=1,the value of Shieh's\nestimate is exactly half of the value of Cohen's estimates."}
                 layout(matrix(c(2,1)), 1, 1)
                 par(mar=c(.5,.5,.5,.5))
-                textplot(tex, halign = "left",cex=1.6)
+                textplot(tex, halign = "left",cex=1.3)
                 par(mar=c(1,1,1,1))
                 plot(sto$nratio,sto$shieh,pch=19,ylim=c(min(sto$shieh,sto$cohen),max(sto$shieh,sto$cohen)),cex=.2,xlab="nratio",ylab=expression(paste("effect size ",delta)),col="lightblue")
                 points(sto$nratio,sto$cohen,pch=19,cex=.2,col="green")
@@ -86,11 +86,11 @@ server <- function(input,output){
             } else {
                 
                 if (input$sd1==input$sd2){
-                    tex <- "When both samples are extracted from the same population variance, Cohen's estimates with either\npooled (green) or unpooled (red) error term are identical. They have a constant value across sample\nsizes ratios, unlike Shieh's estimate.\n\nNote: In the specific situation where log(nratio)=0,the value of Shieh's estimate is exactly half of\nthe value of Cohen's estimates."
-                } else {tex <- "When both samples are extracted from populations with unequal variances, both Shieh's estimate (blue)\nand Cohen's estimate with pooled error term (green) have unequal values across sample sizes ratios.\nOnly Cohen's estimate with unpooled error term (red) is constant across sample sizes ratios.\n\nNote: In the specific situation where log(nratio)=0,the value of Shieh's estimate is exactly half of\nthe value of Cohen's estimates."}
+                    tex <- "When both samples are extracted from the same population variance, \nCohen's estimates with either pooled (green) or unpooled (red) error term\nare identical. They have a constant value across sample sizes ratios,\nunlike Shieh's estimate.\n\nNote: In the specific situation where nratio=1,the value of Shieh's\nestimate is exactly half of the value of Cohen's estimates."
+                } else {tex <- "When both samples are extracted from populations with unequal variances, \nboth Shieh's estimate (blue) and Cohen's estimate with pooled error\nterm (green) have unequal values across sample sizes ratios. Only Cohen's\nestimate with unpooled error term (red) is constant across sample sizes ratios.\n\nNote: In the specific situation where nratio=1,the value of Shieh's\nestimate is exactly half of the value of Cohen's estimates."}
                 layout(matrix(c(2,1)), 1, 1)
                 par(mar=c(.5,.5,.5,.5))
-                textplot(tex, halign = "left",cex=1.6)
+                textplot(tex, halign = "left",cex=1.3)
                 par(mar=c(1,1,1,1))
                 plot(log(sto$nratio),sto$shieh,ylim=c(min(sto$shieh,sto$cohen),max(sto$shieh,sto$cohen)),pch=19,cex=.3,xlab="log(nratio)",ylab=expression(paste("effect size ",delta)),col="lightblue")
                 points(log(sto$nratio),sto$cohen,pch=19,cex=.3,col="green")

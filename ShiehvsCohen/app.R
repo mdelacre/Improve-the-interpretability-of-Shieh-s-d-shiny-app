@@ -1,19 +1,21 @@
 #install.packages("shiny")
 library(devtools)
 library(shiny)
+library(gplots)
+
 
 ui <-fluidPage(
     withMathJax(),
     titlePanel("\\(\\delta_{Shieh}\\) vs. \\(\\delta_{Cohen}\\)"),br(),
     h4(
-        "For given total sample size (N), raw mean difference (\\(\\mu_{1}\\)-\\(\\mu_{2}\\)), and sample standard deviations (\\(\\sigma_{1}\\) and \\(\\sigma_{2}\\)), what are the values of \\(\\delta_{Shieh}\\) and \\(\\delta_{Cohen}\\), as a function of the sample sizes ratio (nratio = \\(\\frac{n_1}{n_2}\\))?"
+        "For given total sample size (N), raw mean difference (\\(\\mu_{1}\\)-\\(\\mu_{2}\\)), and sample standard deviations (\\(\\sigma_{1}\\) and \\(\\sigma_{2}\\)), the plot below shows the values of \\(\\delta_{Shieh}\\), \\(\\delta_{Cohen}\\) and \\(\\delta'_{Cohen}\\), as a function of either the sample sizes ratio (\\(\\frac{n_1}{n_2}\\) when x-axis = nratio) or the logarithm of the sample sizes ratio (log(\\(\\frac{n_1}{n_2}\\)) when x-axis = log(nratio))."
     ),br(),
     selectInput("plot", "x-axis:", 
                 c("nratio" = "nratio",
                   "log(nratio)" = "lognratio")),
     sidebarLayout(
         sidebarPanel(
-            p("Set the following population parameters, so as to determine the values of the \\(\\delta_{Shieh}\\) and \\(\\delta_{Cohen}\\) as a function of the nratio"),
+            p("Set the following population parameters, so as to determine the values of the \\(\\delta_{Shieh}\\), \\(\\delta_{Cohen}\\) and \\(\\delta'_{Cohen}\\) as a function of the nratio:"),
             sliderInput("N", "Total number of observations (N):", min = 10, max = 1000, value = 100,step=2),
             sliderInput("mudiff", "Raw mean difference (\\(\\mu_{1}\\)-\\(\\mu_{2}\\)):", min = -50, max = 50, value = 5),
             sliderInput("sd1", "Standard deviation of the first group (\\(\\sigma_{1}\\)):", min = 1, max = 100, value = 10,step=1),
@@ -25,8 +27,6 @@ ui <-fluidPage(
     ),
     br(),
     br(),
-    textOutput("eq"),   # Place for the equation 
-    textOutput("note")   # Place for a note 
 )
 
 server <- function(input,output){
@@ -56,6 +56,14 @@ server <- function(input,output){
             }
             
             if(input$plot=="nratio"){
+                
+                if (input$sd1==input$sd2){
+                    tex <- "When both samples are extracted from the same population variance, Cohen's estimates with either\npooled (green) or unpooled (red) error term are identical. They have a constant value across sample\nsizes ratios, unlike Shieh's estimate.\n\nNote: In the specific situation where nratio=1,the value of Shieh's estimate is exactly half of the\nvalue of Cohen's estimates."
+                } else {tex <- "When both samples are extracted from populations with unequal variances, both Shieh's estimate (blue)\nand Cohen's estimate with pooled error term (green) have unequal values across sample sizes ratios.\nOnly Cohen's estimate with unpooled error term (red) is constant across sample sizes ratios.\n\nNote: In the specific situation where nratio=1,the value of Shieh's estimate is exactly half of the\nvalue of Cohen's estimates."}
+                layout(matrix(c(2,1)), 1, 1)
+                par(mar=c(.5,.5,.5,.5))
+                textplot(tex, halign = "left",cex=1.6)
+                par(mar=c(1,1,1,1))
                 plot(sto$nratio,sto$shieh,pch=19,ylim=c(min(sto$shieh,sto$cohen),max(sto$shieh,sto$cohen)),cex=.2,xlab="nratio",ylab=expression(paste("effect size ",delta)),col="lightblue")
                 points(sto$nratio,sto$cohen,pch=19,cex=.2,col="green")
                 points(sto$nratio,sto$cohenprime,pch=19,cex=.2,col="red")
@@ -75,7 +83,14 @@ server <- function(input,output){
                        horiz=F,cex=1.5)
                 
             } else {
-                par(xpd=FALSE)
+                
+                if (input$sd1==input$sd2){
+                    tex <- "When both samples are extracted from the same population variance, Cohen's estimates with either\npooled (green) or unpooled (red) error term are identical. They have a constant value across sample\nsizes ratios, unlike Shieh's estimate.\n\nNote: In the specific situation where log(nratio)=0,the value of Shieh's estimate is exactly half of\nthe value of Cohen's estimates."
+                } else {tex <- "When both samples are extracted from populations with unequal variances, both Shieh's estimate (blue)\nand Cohen's estimate with pooled error term (green) have unequal values across sample sizes ratios.\nOnly Cohen's estimate with unpooled error term (red) is constant across sample sizes ratios.\n\nNote: In the specific situation where log(nratio)=0,the value of Shieh's estimate is exactly half of\nthe value of Cohen's estimates."}
+                layout(matrix(c(2,1)), 1, 1)
+                par(mar=c(.5,.5,.5,.5))
+                textplot(tex, halign = "left",cex=1.6)
+                par(mar=c(1,1,1,1))
                 plot(log(sto$nratio),sto$shieh,ylim=c(min(sto$shieh,sto$cohen),max(sto$shieh,sto$cohen)),pch=19,cex=.3,xlab="log(nratio)",ylab=expression(paste("effect size ",delta)),col="lightblue")
                 points(log(sto$nratio),sto$cohen,pch=19,cex=.3,col="green")
                 points(log(sto$nratio),sto$cohenprime,pch=19,cex=.2,col="red")
@@ -95,17 +110,7 @@ server <- function(input,output){
                        horiz=F,cex=1.5)
             }
             
-            if (input$plot=="nratio"){
-                intro="Note: in the specific situation where nratio=1,"
-            } else {intro="Note: in the specific situation where log(nratio)=0,"}
-            
-            output$eq <-renderText({paste0(intro,"\\(\\delta_{Shieh}\\) = \\(\\frac{\\delta_{Cohen}}{2}\\).")})
-            
-            if (input$sd1==input$sd2){
-                output$note <-renderText({paste("Note 2: when both samples are extracted from the same population variances, Cohen estimates with either pooled or unpooled error term are identical.")})
-            } else {output$note <-renderText({""})}
-            
-            
+
         }
         
     )
@@ -113,4 +118,5 @@ server <- function(input,output){
     
 }
 shinyApp(ui=ui,server=server)
+
 
